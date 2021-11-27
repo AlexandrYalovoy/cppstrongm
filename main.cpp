@@ -8,6 +8,7 @@
 //#include "ostream"
 #include "Timer.h"
 #include <cstdlib>
+#include "cctype"
 
 #define MAX_POINTER        5
 
@@ -46,20 +47,72 @@ void my_sort(std::vector<T> &v) {
 
 //Подсчитайте количество гласных букв в книге “Война и мир”. Для подсчета используйте 4 способа:
 
-//int For_For(std::ifstream &f) {
-//    int counter = 0;
-//    std::string str;
-//    std::string vm = "aeiouy";
-//    while (!f.eof()) {
-//        getline(f, str);
-//        for (char ch: vm) {
-//            for (char s: str) {
-//                if (ch == s) ++counter;
-//            }
-//        }
-//    }
-//    return counter;
-//}
+int for_for(std::string _road) {
+    std::ifstream open_file(_road);
+
+    if (open_file.is_open()) {
+        int quantity_vowels{};
+        std::string vowels_base = "aeiouy";
+        std::string read_line{};
+
+        while (!open_file.eof()) {
+            getline(open_file,read_line);
+            for (char line_char: read_line) {
+                for (char volowes_i: vowels_base) {
+                    if (std::tolower(line_char) == volowes_i) {
+                        quantity_vowels++;
+                    }
+                }
+            }
+        }
+        open_file.close();
+//        std::cout << quantity_vowels << std::endl;
+        return quantity_vowels;
+    } else {
+        std::cout << "Open fail" << std::endl;
+        return -1;
+    }
+}
+
+int switch_test(std::string _road) {
+    std::ifstream open_file(_road);
+
+    if (open_file.is_open()) {
+        int quantity_vowels{};
+        char spam_char{};
+
+        while (!open_file.eof()) {
+            open_file.get(spam_char);
+            spam_char = tolower(spam_char);
+            switch (spam_char) {
+                case 'a':
+                    quantity_vowels++;
+                    break;
+                case 'e':
+                    quantity_vowels++;
+                    break;
+                case 'i':
+                    quantity_vowels++;
+                    break;
+                case 'o':
+                    quantity_vowels++;
+                    break;
+                case 'u':
+                    quantity_vowels++;
+                    break;
+                case 'y':
+                    quantity_vowels++;
+                    break;
+            }
+        }
+        open_file.close();
+//        std::cout << quantity_vowels << std::endl;
+        return quantity_vowels;
+    } else {
+        std::cout << "Open fail" << std::endl;
+        return -1;
+    }
+}
 
 int main() {
     std::cout << "L2_1" << std::endl;
@@ -102,20 +155,18 @@ int main() {
     std::cout << "L2_3" << std::endl;
     std::cout << std::endl;
 
-    std::string spam_c{};
+    int spam_quantity{};
+
+    std::cout << "For - For" << std::endl;
     Timer tm("For - For");
-    std::ifstream open_file("test.txt");
-//    std::cout << For_For(file) << "   ";
-    open_file.open("test.txt");
-    if (open_file.is_open()) {
-        open_file >> spam_c;
-        std::cout << spam_c << std::endl;
-        open_file.close();
-    } else {
-        std::cout << "Open fail" << std::endl;
-    }
+    spam_quantity = for_for("..\\War and peace.txt");
+    std::cout << spam_quantity << std::endl;
+    tm.print();
 
-
+    std::cout << "switch_test" << std::endl;
+    tm.start("switch_test");
+    spam_quantity = for_for("..\\War and peace.txt");
+    std::cout << spam_quantity << std::endl;
     tm.print();
 
 
