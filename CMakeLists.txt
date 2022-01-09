@@ -3,4 +3,4 @@ project(cppstrongm)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(cppstrongm main.cpp)
+add_executable(cppstrongm main.cpp IMethods.h IRepository.h StudentGroup.cpp StudentGroup.h)
