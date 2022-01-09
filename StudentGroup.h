@@ -8,7 +8,7 @@
 #define _STUDENTGROUP_H
 #include <fstream>
 #include <sstream>
-#include "cmake-build-debug/LessonSeven.pb.h"
+#include "LessonSeven.pb.h"
 #include "IMethods.h"
 #include "IRepository.h"
 

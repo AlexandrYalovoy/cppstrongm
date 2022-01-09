@@ -1,6 +1,6 @@
 #include <iostream>
 #include <numeric>
-#include "cmake-build-debug/LessonSeven.pb.h"
+#include "LessonSeven.pb.h"
 #include "StudentGroup.h"
 
 void TaskTwo() {
