@@ -51,6 +51,8 @@ void search_n_even_number(size_t _n_number, size_t &_even_number, size_t &_n_eve
             // по завершению цикла увеличиваем стартовое число на 1
             start_number++;
             if (count_for_even == 1) {
+                //берем число по ссылке по идеи его надо на этот момент времени заблокировать,
+                // но это не точно просветите
                 m_n_even_number.lock();
                 _n_even_number = n_count;
                 m_n_even_number.unlock();
@@ -78,10 +80,12 @@ void print_stage_search(size_t &_n_even_number, bool &_is_end, size_t _n_number)
     size_t n_number{};
     while (_is_end != true) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
+        // вот тут я крутил хвостом потом дошел до статик кастов, надо ли блочить ил нет не знаю.
         m_n_even_number.lock();
         n_even_number = _n_even_number;
         m_n_even_number.unlock();
 
+        // вывод до конца в процентах в консоль
         result = ((static_cast<double>(n_even_number) / static_cast<double>(_n_number))) * 100;
         m_cout.lock();
         std::cout << "% done - " << result << std::endl;
@@ -117,13 +121,12 @@ int main() {
 //    Вычисления реализовать во вторичном потоке. В консоли отображать прогресс вычисления.
 
     std::cout << "///6.2///" << std::endl;
-    search_even_and_info(30000);
+    search_even_and_info(1000000);
 
 //    3. Промоделировать следующую ситуацию. Есть два человека (2 потока): хозяин и вор. Хозяин приносит домой вещи
 //    (функция добавляющая случайное число в вектор с периодичностью 1 раз в секунду). При этом у каждой вещи есть
 //    своя ценность. Вор забирает вещи (функция, которая находит наибольшее число и удаляет из вектора с периодичностью
 //    1 раз в 0.5 секунд), каждый раз забирает вещь с наибольшей ценностью.
-
 
     return 0;
 }
