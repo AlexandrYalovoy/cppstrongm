@@ -2,6 +2,8 @@
 #include "thread"
 #include "mutex"
 #include "chrono"
+#include "vector"
+#include "algorithm"
 
 //    1. Создайте потокобезопасную оболочку для объекта cout. Назовите ее pcout. Необходимо, чтобы несколько потоков могли
 //    обращаться к pcout и информация выводилась в консоль. Продемонстрируйте работу pcout.
@@ -102,7 +104,66 @@ void search_even_and_info(size_t _n_number) {
     std::thread th_6_2_print(print_stage_search, std::ref(n_even_number), std::ref(is_end),
                             _n_number);
     th_6_2_search.join(); // будем ждать пока окончит
-    th_6_2_print.detach(); // не будем ждать пока окончит
+//    th_6_2_print.detach(); // не будем ждать пока окончит // мешало последующему.
+    th_6_2_print.join();
+}
+
+//    3. Промоделировать следующую ситуацию. Есть два человека (2 потока): хозяин и вор. Хозяин приносит домой вещи
+//    (функция добавляющая случайное число в вектор с периодичностью 1 раз в секунду). При этом у каждой вещи есть
+//    своя ценность. Вор забирает вещи (функция, которая находит наибольшее число и удаляет из вектора с периодичностью
+//    1 раз в 0.5 секунд), каждый раз забирает вещь с наибольшей ценностью.
+
+int gen_int_number(size_t _range) {
+    return rand() % _range + 1;
+}
+
+void add_rand_int_number_in_vector(std::vector<int> &_vector, size_t _quantity_number, size_t _range) {
+    for (int i = 0; i <= _quantity_number ; ++i) {
+        _vector.push_back(gen_int_number(_range));
+    }
+}
+
+template<typename _type>
+void print_array(_type &_array) {
+    for (auto item: _array) {
+        std::cout << item << ",";
+    }
+    std::cout << std::endl;
+}
+
+std::mutex m_vector;
+
+
+void evro_gaz (std::vector<int> &_array, size_t _range) {
+    while (!_array.empty()){
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        m_vector.lock();
+        _array.push_back(gen_int_number(_range));
+        std::sort(_array.begin(), _array.end());
+        print_array(_array);
+        m_vector.unlock();
+        if (_array.size() > 25) {
+            break;
+        }
+    }
+}
+
+void ukraina_gaz(std::vector<int> &_array){
+    while (!_array.empty()){
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        m_vector.lock();
+        _array.pop_back();
+        print_array(_array);
+        m_vector.unlock();
+    }
+}
+
+void start_6_3(std::vector<int> &_array) {
+    size_t range = 100;
+    std::thread owner(evro_gaz, ref(_array), range);
+    std::thread thief(ukraina_gaz, ref(_array));
+    thief.join();
+    owner.detach();
 }
 
 
@@ -121,12 +182,21 @@ int main() {
 //    Вычисления реализовать во вторичном потоке. В консоли отображать прогресс вычисления.
 
     std::cout << "///6.2///" << std::endl;
-    search_even_and_info(1000000);
+    search_even_and_info(10000);
 
 //    3. Промоделировать следующую ситуацию. Есть два человека (2 потока): хозяин и вор. Хозяин приносит домой вещи
 //    (функция добавляющая случайное число в вектор с периодичностью 1 раз в секунду). При этом у каждой вещи есть
 //    своя ценность. Вор забирает вещи (функция, которая находит наибольшее число и удаляет из вектора с периодичностью
 //    1 раз в 0.5 секунд), каждый раз забирает вещь с наибольшей ценностью.
+
+
+    std::cout << "///6.3///" << std::endl;
+
+    std::vector<int> vector_6_3;
+    add_rand_int_number_in_vector(vector_6_3, 10, 100);
+    print_array(vector_6_3);
+    start_6_3(vector_6_3);
+    print_array(vector_6_3);
 
     return 0;
 }
